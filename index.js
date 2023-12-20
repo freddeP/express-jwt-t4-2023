@@ -1,5 +1,6 @@
 const express = require("express");
 const {log, auth} = require("./mw");
+const cookieParser = require('cookie-parser');
 
 const {guitars} = require("./controllers");
 
@@ -30,22 +31,81 @@ const jwt = require("jsonwebtoken");
 const uniqid = require("uniqid");
 
 app.post("/login", login);
+app.post("/verify",cookieParser(), verify);
+
+async function verify(req, res){
+
+    let {code} = req.body;
+    let {token} = req.cookies;
+
+    // Verifiera token
+    try {
+        let checkedToken = await jwt.verify(token,process.env.NODE_SECRET);
+
+        let hash = checkedToken.hash;
+
+        let checkPassword = await bcrypt.compare(code, hash);
+
+        if(checkPassword){
+
+            let payload = {
+                email:checkedToken.email,
+                role:"pwl-user"
+            }
+            // Byt secret efter jul OBS bör inte vara samma som vid tillfällig token
+            let authToken = await jwt.sign(payload, process.env.NODE_SECRET,{
+                expiresIn:"3h"
+            });
+            res.cookie("auth-token",authToken,{
+              httpOnly:true  
+            })
+            return res.json(authToken);
+        }
+        throw new Error({message: "wrong code"});
+
+    } catch (error) {
+        console.log("error",error);
+        return res.json(error);
+    }
+
+
+
+    // om det gick bra ska vi kolla lösenordet 
+
+    // om ALLT gick bra skapar vi en ny token som varar längre och 
+    // som skall fungera som auth-token för andra requests
+
+
+
+/*     res.json({code, token}); */
+
+}
+
+
+
 
 async function login(req, res){
 
     let email = req.body.email;
     // Skapa engångslösenord
     let code = uniqid();
+
+    // Simulera att kod skickas via mail ( vi använder console.log)
     console.log(code);
+
+
     let hash = await bcrypt.hash(code, 12);
+    // Använder miljövariabel skapad i windows
+    let token = await jwt.sign({email, hash},process.env.NODE_SECRET, {expiresIn:60});
 
-    let token = await jwt.sign({email, hash},process.env.secret, {expiresIn:60});
-
+    res.cookie("token",token,{
+        maxAge:60000
+    });
     res.json(token);
 
 }
 
-//app.post("/verify", verify);
+
 
 
 
