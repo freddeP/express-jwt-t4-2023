@@ -1,6 +1,10 @@
+require('dotenv').config()
 const express = require("express");
 const {log, auth} = require("./mw");
 const cookieParser = require('cookie-parser');
+
+const send = require("./email");
+
 
 const {guitars} = require("./controllers");
 
@@ -13,6 +17,7 @@ app.listen(3456, err=> {
 
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
+app.use(express.static('public'));
 
 let user = "user";
 
@@ -41,11 +46,12 @@ async function verify(req, res){
     // Verifiera token
     try {
         let checkedToken = await jwt.verify(token,process.env.NODE_SECRET);
+        console.log("checkedToken", checkedToken);
 
         let hash = checkedToken.hash;
 
         let checkPassword = await bcrypt.compare(code, hash);
-
+        console.log("checkPassword", checkPassword);
         if(checkPassword){
 
             let payload = {
@@ -61,10 +67,10 @@ async function verify(req, res){
             })
             return res.json(authToken);
         }
-        throw new Error({message: "wrong code"});
+        return res.json({error:"Wrong Code"});
 
     } catch (error) {
-        console.log("error",error);
+        //console.log("error",error);
         return res.json(error);
     }
 
@@ -96,12 +102,17 @@ async function login(req, res){
 
     let hash = await bcrypt.hash(code, 12);
     // Använder miljövariabel skapad i windows
-    let token = await jwt.sign({email, hash},process.env.NODE_SECRET, {expiresIn:60});
+    let token = await jwt.sign({email, hash},process.env.NODE_SECRET, {expiresIn:120});
+
+    // skicka kod till användare via mail
+    send(email, code);
 
     res.cookie("token",token,{
         maxAge:60000
     });
-    res.json(token);
+
+    return res.redirect("/verify.html");
+    res.json(token);  // för postman..
 
 }
 
