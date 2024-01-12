@@ -1,0 +1,8 @@
+extends template.pug 
+
+
+block content 
+    div(class="formContainer")
+       form(action="/guitars", method="post")
+            input( type="text", name="title", placeholder="Guitar name")
+            input(type = "submit", value = "Save")

@@ -47,7 +47,8 @@ async function create(req, res){
         let guitars = await getAllData();
         guitars = [guitar, ...guitars];  // lägg till först
         saveToFile(guitars);
-        res.status(201).json(guitar);
+        //res.status(201).json(guitar);
+        res.redirect("/");
     } catch (error) {
         res.status(500).json(error);
     }

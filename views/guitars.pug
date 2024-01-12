@@ -3,7 +3,7 @@ extends template.pug
 
 block content
     if guitars
-       div(class = "guitarContainer") 
+       div(class = "formContainer") 
             each guitar in guitars
                 div(class="guitar" id=guitar.id)
                     h3=guitar.title 

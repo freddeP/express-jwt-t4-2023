@@ -9,11 +9,16 @@ html
         if title 
             title=title 
         else 
-            title = "Default title from pug..."
+            title Default title from pug...
 
     body 
         header
+            h1 My Guitar Page
             nav 
+                a(href = "/") HOME
+                a(href="/login") LOGIN
+                a(href="/create") CREATE GUITAR
+                
 
         main 
             block content

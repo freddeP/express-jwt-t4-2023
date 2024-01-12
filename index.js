@@ -23,13 +23,8 @@ app.use(express.static('public'));
 
 app.set("view engine", "pug");
 
-let user = "user";
 
-let cars = ["saab", "tesla", "lada"];
 
-app.get("/test",(req, res)=>{
-    res.render("test",{title:"cars", cars});
-});
 
 
 
@@ -38,6 +33,20 @@ app.get("/",async (req, res)=>{
     let guitars = await getAllData();
     res.render("guitars",{title:"My Guitars", guitars});
 });
+
+
+/* Auth-routes */
+app.get("/login", (req, res)=>{
+    res.render("login",{title:"LOGIN"});
+});
+app.get("/verify", (req, res)=>{
+    res.render("verify");
+});
+
+/* Guitar-routes PUG */
+app.get("/create",(req, res)=>{
+    res.render("createGuitar",{title:"Create A Guitar"});
+})
 
 
 
@@ -131,7 +140,7 @@ async function login(req, res){
         maxAge:60000
     });
 
-    return res.redirect("/verify.html");
+    return res.redirect("/verify");
     res.json(token);  // för postman..
 
 }
