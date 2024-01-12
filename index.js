@@ -2,9 +2,11 @@ require('dotenv').config()
 const express = require("express");
 const {log, auth} = require("./mw");
 const cookieParser = require('cookie-parser');
-
+require("pug");
 const send = require("./email");
 
+
+console.log("secret",process.env.NODE_SECRET);
 
 const {guitars} = require("./controllers");
 
@@ -19,12 +21,30 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(express.static('public'));
 
+app.set("view engine", "pug");
+
 let user = "user";
 
+let cars = ["saab", "tesla", "lada"];
 
-app.get("/guitars",log, guitars.index);
+app.get("/test",(req, res)=>{
+    res.render("test",{title:"cars", cars});
+});
+
+
+
+const {getAllData} = require("./db");
+app.get("/",async (req, res)=>{
+    let guitars = await getAllData();
+    res.render("guitars",{title:"My Guitars", guitars});
+});
+
+
+
+
+app.get("/guitars",guitars.index);
 app.post("/guitars", guitars.create);
-app.get("/guitars/:id",log, auth(user), guitars.show);
+app.get("/guitars/:id", guitars.show);
 app.delete("/guitars/:id", guitars.destroy);
 app.put("/guitars/:id", guitars.update);
 
@@ -45,7 +65,7 @@ async function verify(req, res){
 
     // Verifiera token
     try {
-        let checkedToken = await jwt.verify(token,process.env.NODE_SECRET);
+        let checkedToken = await jwt.verify(token,process.env.SECRET1);
         console.log("checkedToken", checkedToken);
 
         let hash = checkedToken.hash;
@@ -59,7 +79,7 @@ async function verify(req, res){
                 role:"pwl-user"
             }
             // Byt secret efter jul OBS bör inte vara samma som vid tillfällig token
-            let authToken = await jwt.sign(payload, process.env.NODE_SECRET,{
+            let authToken = await jwt.sign(payload, process.env.SECRET2,{
                 expiresIn:"3h"
             });
             res.cookie("auth-token",authToken,{
@@ -102,7 +122,7 @@ async function login(req, res){
 
     let hash = await bcrypt.hash(code, 12);
     // Använder miljövariabel skapad i windows
-    let token = await jwt.sign({email, hash},process.env.NODE_SECRET, {expiresIn:120});
+    let token = await jwt.sign({email, hash},process.env.SECRET1, {expiresIn:120});
 
     // skicka kod till användare via mail
     send(email, code);

@@ -68,7 +68,7 @@ try {
     {
         guitars = [...filteredGuitars];
         saveToFile(guitars);
-        return res.status(200).json({message:"deleted "+id});
+        return res.status(200).json({message:"deleted", id});
     }
    
    
