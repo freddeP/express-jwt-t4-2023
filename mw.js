@@ -1,4 +1,5 @@
-
+const jwt = require("jsonwebtoken");
+const cookieParser = require('cookie-parser');
 
 module.exports = {log, auth};
 
@@ -17,23 +18,21 @@ function log(req, res, next){
 }
 
 
-function auth(user){
+async function auth(req, res, next){
 
-    return function(req, res, next){
+    let token = req.cookies['auth-token'];
 
-        if(user == "user"){
-            console.log("Auth as user");
-            return next();
-        }
-        if(user == "admin"){
-            console.log("auth as admin");
-            return next();
-        }
-        else{
-            return res.send("forbidden");
-        }
-
+    try {
         
+        token = jwt.verify(token, process.env.SECRET2);
+        let user = {email: token.email, role: token.role}
+        req.user = user;
+        next();
+
+
+    } catch (error) {
+        res.redirect("/?errorAuthMW");
     }
+
 
 }

@@ -17,6 +17,7 @@ app.listen(3456, err=> {
     console.log("lyssnar på 3456");   
 });
 
+app.use(cookieParser());
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(express.static('public'));
@@ -44,7 +45,7 @@ app.get("/verify", (req, res)=>{
 });
 
 /* Guitar-routes PUG */
-app.get("/create",(req, res)=>{
+app.get("/create",auth,(req, res)=>{
     res.render("createGuitar",{title:"Create A Guitar"});
 })
 
@@ -52,9 +53,9 @@ app.get("/create",(req, res)=>{
 
 
 app.get("/guitars",guitars.index);
-app.post("/guitars", guitars.create);
+app.post("/guitars",auth, guitars.create);
 app.get("/guitars/:id", guitars.show);
-app.delete("/guitars/:id", guitars.destroy);
+app.delete("/guitars/:id",auth, guitars.destroy);
 app.put("/guitars/:id", guitars.update);
 
 
@@ -65,7 +66,7 @@ const jwt = require("jsonwebtoken");
 const uniqid = require("uniqid");
 
 app.post("/login", login);
-app.post("/verify",cookieParser(), verify);
+app.post("/verify", verify);
 
 async function verify(req, res){
 
@@ -94,7 +95,8 @@ async function verify(req, res){
             res.cookie("auth-token",authToken,{
               httpOnly:true  
             })
-            return res.json(authToken);
+            //return res.json(authToken);
+            return res.redirect("/?loggedIn");
         }
         return res.json({error:"Wrong Code"});
 

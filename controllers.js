@@ -39,8 +39,9 @@ async function create(req, res){
         if(!title) return res.status(400).json({error:"No data"});
     
         let id = uniqid();
+        
     
-        let guitar = {id, title};
+        let guitar = {id, title, user:req.user};
     
     
     
