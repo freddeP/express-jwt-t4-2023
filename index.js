@@ -1,7 +1,8 @@
 require('dotenv').config()
 const express = require("express");
-const {log, auth} = require("./mw");
+const {log, auth, isMine, isUser} = require("./mw");
 const cookieParser = require('cookie-parser');
+const fu = require("express-fileupload");
 require("pug");
 const send = require("./email");
 
@@ -18,8 +19,13 @@ app.listen(3456, err=> {
 });
 
 app.use(cookieParser());
+
+// parsar inkommande post-data
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
+// parsa file-data
+app.use(fu());
+
 app.use(express.static('public'));
 
 app.set("view engine", "pug");
@@ -30,9 +36,10 @@ app.set("view engine", "pug");
 
 
 const {getAllData} = require("./db");
-app.get("/",async (req, res)=>{
+app.get("/",isUser,async (req, res)=>{
     let guitars = await getAllData();
-    res.render("guitars",{title:"My Guitars", guitars});
+
+    res.render("guitars",{title:"My Guitars", guitars, user:req.user});
 });
 
 
@@ -50,12 +57,40 @@ app.get("/create",auth,(req, res)=>{
 })
 
 
+// file upload 16/1- 2024
 
+app.get("/fu",(req, res)=>{
+
+    res.render("fu");
+
+});
+app.post("/fu",(req, res)=>{
+
+    console.log(req.files)
+
+    // Flytta fil till katalog
+    //req.files.myFile.mv("uploads/test.jpg");
+
+    req.files.myFile.forEach(f=>{
+
+        let name = uniqid();
+        let ext = f.name.split(".").pop();
+        console.log("ext", ext);
+
+        f.mv("uploads/"+name+"."+ext);
+    });
+
+    res.send("File uploaded");
+
+});
+
+
+// end fileupload
 
 app.get("/guitars",guitars.index);
 app.post("/guitars",auth, guitars.create);
 app.get("/guitars/:id", guitars.show);
-app.delete("/guitars/:id",auth, guitars.destroy);
+app.delete("/guitars/:id",auth, isMine, guitars.destroy);
 app.put("/guitars/:id", guitars.update);
 
 
@@ -136,7 +171,7 @@ async function login(req, res){
     let token = await jwt.sign({email, hash},process.env.SECRET1, {expiresIn:120});
 
     // skicka kod till användare via mail
-    send(email, code);
+    //send(email, code);
 
     res.cookie("token",token,{
         maxAge:60000

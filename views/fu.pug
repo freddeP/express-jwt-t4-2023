@@ -1,0 +1,8 @@
+extends template.pug 
+
+
+block content 
+    div(class="formContainer")
+       form(action="/fu", method="post" enctype="multipart/form-data")
+            input( type="file", name="myFile", placeholder="Upload a file" multiple)
+            input(type = "submit", value = "Save")

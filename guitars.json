@@ -1,34 +1,26 @@
 [
   {
-    "id": "ozgtn15glrai1pb6",
-    "title": "Takamine Orginal",
+    "id": "ozgtnamklrg2hv7g",
+    "title": "PRS starla Lenny Version",
+    "user": {
+      "email": "lenny@lenny.com",
+      "role": "pwl-user"
+    }
+  },
+  {
+    "id": "ozgtn5qklresmjpx",
+    "title": "Not jens' GURA",
     "user": {
       "email": "persson.fredric@gmail.com",
       "role": "pwl-user"
     }
   },
   {
-    "id": "ozgtndd8lrag5trw",
-    "title": "Reverend Double Agent "
-  },
-  {
-    "id": "ozgtn2i0lrag3899",
-    "title": "Used Taylor GS mini"
-  },
-  {
-    "id": "ozgtn8zwlr92a7sv",
-    "title": "Godin A6 Ultra"
-  },
-  {
-    "id": "ozgtnckglr929mv6",
-    "title": "Gibson 335 BB King"
-  },
-  {
-    "id": "ozgtnd30lr929bqj",
-    "title": "Eko aire"
-  },
-  {
-    "id": "ozgtn178lptmhx0j",
-    "title": "My Martin  00x1e"
+    "id": "ozgtn5qklreslar0",
+    "title": "Fender Telecaster 59",
+    "user": {
+      "email": "jens@jens.se",
+      "role": "pwl-user"
+    }
   }
 ]

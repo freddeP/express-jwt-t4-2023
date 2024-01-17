@@ -2,9 +2,15 @@ extends template.pug
 
 
 block content
+
+
     if guitars
-       div(class = "formContainer") 
+       div(class = "formContainer guitarContainer") 
             each guitar in guitars
                 div(class="guitar" id=guitar.id)
-                    h3=guitar.title 
-                    a(href="/guitars/"+guitar.id data-type="delete") delete
+                    h3=guitar.title
+                    h6=guitar.user.email
+
+                  
+                    if user && (user.email == guitar.user.email)
+                        a(href="/guitars/"+guitar.id data-type="delete") delete
