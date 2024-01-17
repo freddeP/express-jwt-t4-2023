@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require("express");
-const {log, auth, isMine, isUser} = require("./mw");
+const {log, auth, isMine, isUser, fileSize, test} = require("./mw");
 const cookieParser = require('cookie-parser');
 const fu = require("express-fileupload");
 require("pug");
@@ -27,6 +27,7 @@ app.use(express.json());
 app.use(fu());
 
 app.use(express.static('public'));
+app.use(express.static('uploads'));
 
 app.set("view engine", "pug");
 
@@ -56,6 +57,12 @@ app.get("/create",auth,(req, res)=>{
     res.render("createGuitar",{title:"Create A Guitar"});
 })
 
+
+app.get("/error",(req,res)=>{
+
+    res.render("error",{error:{id:3}, name:"LENNY"});
+
+});
 
 // file upload 16/1- 2024
 
@@ -88,7 +95,7 @@ app.post("/fu",(req, res)=>{
 // end fileupload
 
 app.get("/guitars",guitars.index);
-app.post("/guitars",auth, guitars.create);
+app.post("/guitars",auth,fileSize(1000000), guitars.create);
 app.get("/guitars/:id", guitars.show);
 app.delete("/guitars/:id",auth, isMine, guitars.destroy);
 app.put("/guitars/:id", guitars.update);

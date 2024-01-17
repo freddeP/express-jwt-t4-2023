@@ -10,6 +10,12 @@ block content
                 div(class="guitar" id=guitar.id)
                     h3=guitar.title
                     h6=guitar.user.email
+                    if(guitar.files)
+                        div(class="imgContainer")
+                            each file in guitar.files
+                                div
+                                    img(src=file)
+                                 
 
                   
                     if user && (user.email == guitar.user.email)

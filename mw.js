@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require('cookie-parser');
 const {getAllData} = require("./db");
 
-module.exports = {log, auth, isMine, isUser};
+module.exports = {log, auth, isMine, isUser, fileSize, test};
 
 /* Custom middleware */
 
@@ -83,4 +83,27 @@ async function isMine(req, res, next){
 
 
 
+}
+
+function test(req, res, next){
+    console.log("mw",req.files);
+    next();
+}
+
+
+function fileSize(size = 2000000){
+
+    return function(req, res, next){
+ 
+        let files = req.files.myFiles;
+        if(!files.length) files = [files];
+        
+        let tooBig = files.filter(f=>f.size>size);
+
+        tooBig = tooBig.map(f=>({name:f.name, size:f.size}));
+        let error = {error:"Upload Error",sizeLimit:size+"bytes" , files:tooBig}
+        if(tooBig.length) return res.render("error",{error});
+
+        next();
+    }
 }

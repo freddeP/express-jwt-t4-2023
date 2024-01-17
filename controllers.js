@@ -35,13 +35,19 @@ async function update(req, res){
 async function create(req, res){
 
     try {
+
+        
+        let files = req.files ? handleFiles(req.files.myFiles) : false
+
+        console.log("files",req.files);
+
         let {title} = req.body;
         if(!title) return res.status(400).json({error:"No data"});
     
         let id = uniqid();
         
     
-        let guitar = {id, title, user:req.user};
+        let guitar = {id, title, user:req.user, files};
     
     
     
@@ -106,6 +112,24 @@ async function index(req, res){
     } catch (error) {
         return res.status(500).json(error);
     }
+
+
+}
+
+
+
+
+function handleFiles(f, folder="uploads"){
+
+    if(!f.length) f = [f];
+
+    return f.map(file=>{
+        const ext = file.name.split(".").pop();
+        const name = uniqid() + "." + ext;
+        file.mv(folder+"/"+name);
+        return name;
+    });
+
 
 
 }
