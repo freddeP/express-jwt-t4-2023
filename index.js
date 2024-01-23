@@ -21,6 +21,18 @@ app.listen(3456, err=> {
 app.use(cookieParser());
 
 // parsar inkommande post-data
+/* app.use(function (req, res, next){
+
+    req.on("data",function(buffer){
+
+        console.log("BUFFER");
+        console.log(buffer);
+
+    });
+
+    next();
+
+}) */
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 // parsa file-data

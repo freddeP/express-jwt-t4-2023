@@ -39,7 +39,14 @@ async function create(req, res){
         
         let files = req.files ? handleFiles(req.files.myFiles) : false
 
-        console.log("files",req.files);
+        //console.log("files",req.files);
+
+
+  
+
+
+        if(req.body.client) return res.json({message:"client side file upload"});
+
 
         let {title} = req.body;
         if(!title) return res.status(400).json({error:"No data"});
@@ -131,5 +138,20 @@ function handleFiles(f, folder="uploads"){
     });
 
 
+
+}
+
+
+
+function testData(req, res, next){
+
+    req.on("data",function(buffer){
+
+        console.log("BUFFER");
+        console.log(buffer);
+
+    });
+
+    next();
 
 }
