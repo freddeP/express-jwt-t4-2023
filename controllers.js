@@ -143,15 +143,3 @@ function handleFiles(f, folder="uploads"){
 
 
 
-function testData(req, res, next){
-
-    req.on("data",function(buffer){
-
-        console.log("BUFFER");
-        console.log(buffer);
-
-    });
-
-    next();
-
-}

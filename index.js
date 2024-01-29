@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require("express");
-const {log, auth, isMine, isUser, fileSize, test} = require("./mw");
+const {log, auth, isMine, isUser, fileSize, test, fileExt} = require("./mw");
 const cookieParser = require('cookie-parser');
 const fu = require("express-fileupload");
 require("pug");
@@ -107,7 +107,7 @@ app.post("/fu",(req, res)=>{
 // end fileupload
 
 app.get("/guitars",guitars.index);
-app.post("/guitars",auth,fileSize(1000000), guitars.create);
+app.post("/guitars",auth,fileSize(), fileExt({jpg:true}), guitars.create);
 app.get("/guitars/:id", guitars.show);
 app.delete("/guitars/:id",auth, isMine, guitars.destroy);
 app.put("/guitars/:id", guitars.update);

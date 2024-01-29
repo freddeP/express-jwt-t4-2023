@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require('cookie-parser');
 const {getAllData} = require("./db");
 
-module.exports = {log, auth, isMine, isUser, fileSize, test};
+module.exports = {log, auth, isMine, isUser, fileSize, test, fileExt};
 
 /* Custom middleware */
 
@@ -95,6 +95,7 @@ function fileSize(size = 2000000){
 
     return function(req, res, next){
  
+        if(!req.files) return next();
         let files = req.files.myFiles;
         if(!files.length) files = [files];
         
@@ -105,5 +106,38 @@ function fileSize(size = 2000000){
         if(tooBig.length) return res.render("error",{error});
 
         next();
+    }
+}
+
+
+
+function fileExt(ext = null){
+    return function(req, res, next){
+
+        if(!ext) return res.render("error",{error:"No extentions provided"});
+
+        if(!req.files) return next();
+        
+        let files = req.files.myFiles;
+        if(!files.length) files = [files];
+
+        let forbiddenExt = files.filter(f=>{
+                let extention = f.name.split(".").at(-1);
+                return !(ext[extention]);
+        });
+
+        if(forbiddenExt.length>0){
+            forbiddenExt = forbiddenExt.map(f=>f.name);
+            return res.render("error",{error:{msg:"Forbidden extentions found", forbidden: forbiddenExt, 
+            allowed:ext}});
+
+        }
+
+        next();
+
+
+
+
+
     }
 }
